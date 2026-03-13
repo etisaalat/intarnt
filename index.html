@@ -1,0 +1,271 @@
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>بوابة الإنترنت المنزلي</title><script src="https://cdn.tailwindcss.com"></script><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap" rel="stylesheet"><style>
+
+body{
+font-family:'Cairo',sans-serif;
+background:#0b0f15;
+color:white;
+}
+
+.hero{
+background:linear-gradient(120deg,#4a148c,#0f172a);
+}
+
+.brand{
+cursor:pointer;
+opacity:.7;
+transition:.3s;
+padding:10px 18px;
+background:#151a22;
+border-radius:10px;
+}
+
+.brand:hover{
+transform:scale(1.08);
+}
+
+.brand.active{
+opacity:1;
+background:#4a148c;
+}
+
+.card{
+background:#151a22;
+border:1px solid #242a35;
+transition:.3s;
+}
+
+.card:hover{
+transform:translateY(-6px);
+box-shadow:0 15px 40px rgba(0,0,0,.6);
+}
+
+.btn{
+background:#4a148c;
+transition:.3s;
+}
+
+.btn:hover{
+transform:scale(1.05);
+}
+
+.commentBox{
+height:320px;
+overflow:auto;
+}
+
+@keyframes fade{
+from{opacity:0;transform:translateY(10px)}
+to{opacity:1;transform:translateY(0)}
+}
+
+.comment{
+animation:fade .4s ease;
+}
+
+input,select,textarea{
+background:#0f141b;
+}
+
+</style></head><body><section class="hero py-24 text-center"><h1 class="text-5xl font-black mb-4">
+بوابة الإنترنت المنزلي
+</h1><p class="opacity-70 mb-4">
+اختر الشركة والباقه المناسبة
+</p><p class="text-sm opacity-70">
+👥 <span id="online">132</span> مستخدم يشاهد العرض
+</p></section><section class="max-w-6xl mx-auto py-16 px-6"><div class="flex justify-center gap-4 mb-12"><div onclick="switchBrand('we')" id="we" class="brand active">
+WE
+</div><div onclick="switchBrand('vodafone')" id="vodafone" class="brand">
+Vodafone
+</div><div onclick="switchBrand('orange')" id="orange" class="brand">
+Orange
+</div><div onclick="switchBrand('etisalat')" id="etisalat" class="brand">
+Etisalat
+</div></div><div id="packages" class="grid md:grid-cols-3 gap-6"></div></section><section class="max-w-xl mx-auto pb-20 px-6"><div class="card p-8 rounded-2xl"><h3 class="text-2xl font-bold mb-6 text-center">
+إرسال طلب الاشتراك
+</h3><input id="phone"
+placeholder="رقم الأرضي"
+class="w-full p-3 mb-4 rounded">
+
+<select id="packageSelect"
+class="w-full p-3 mb-6 rounded"></select>
+
+<button onclick="sendOrder()"
+class="btn w-full py-3 rounded font-bold">
+إرسال الطلب عبر واتساب
+</button>
+
+</div></section><section class="max-w-4xl mx-auto pb-20 px-6"><div class="card p-6 rounded-2xl"><h3 class="font-bold mb-4">
+آراء العملاء
+</h3><input id="name" placeholder="اسمك"
+class="w-full p-2 mb-2 rounded">
+
+<textarea id="msg" placeholder="اكتب تعليق"
+class="w-full p-2 mb-3 rounded"></textarea><button onclick="addComment()"
+class="btn px-6 py-2 rounded text-sm">
+إضافة تعليق
+</button>
+
+<div id="comments"
+class="commentBox mt-6 space-y-3"></div></div></section><script>
+
+const config={
+
+we:[
+{speed:"140GB",price:100},
+{speed:"250GB",price:170},
+{speed:"600GB",price:410}
+],
+
+vodafone:[
+{speed:"140GB",price:110},
+{speed:"200GB",price:150},
+{speed:"300GB",price:220}
+],
+
+orange:[
+{speed:"140GB",price:105},
+{speed:"250GB",price:185},
+{speed:"400GB",price:310}
+],
+
+etisalat:[
+{speed:"140GB",price:100},
+{speed:"200GB",price:155},
+{speed:"320GB",price:245}
+]
+
+}
+
+let current="we"
+
+function switchBrand(b){
+
+current=b
+
+document.querySelectorAll(".brand").forEach(x=>x.classList.remove("active"))
+
+document.getElementById(b).classList.add("active")
+
+render()
+
+}
+
+function render(){
+
+let html=""
+
+config[current].forEach(p=>{
+
+html+=`
+<div class="card p-6 rounded-xl text-center">
+
+<h4 class="text-xl font-bold mb-2">
+باقة ${p.speed}
+</h4>
+
+<p class="text-3xl font-black mb-4">
+${p.price} جنيه
+</p>
+
+<button onclick="selectPkg('${p.speed}')"
+class="btn px-6 py-2 rounded">
+اختيار
+</button>
+
+</div>
+`
+
+})
+
+packages.innerHTML=html
+
+packageSelect.innerHTML=config[current]
+.map(p=>`<option>${p.speed}</option>`).join("")
+
+}
+
+function selectPkg(p){
+packageSelect.value=p
+}
+
+function sendOrder(){
+
+let phone=document.getElementById("phone").value
+let pkg=document.getElementById("packageSelect").value
+
+if(phone.length<8){
+alert("ادخل الرقم صحيح")
+return
+}
+
+let text=`طلب اشتراك
+
+الشركة:${current}
+
+الباقة:${pkg}
+
+الرقم:${phone}`
+
+window.open(
+`https://wa.me/201503451408?text=${encodeURIComponent(text)}`
+)
+
+}
+
+function addComment(){
+
+let name=document.getElementById("name").value||"زائر"
+let msg=document.getElementById("msg").value
+
+if(!msg)return
+
+let html=`
+<div class="card p-3 rounded text-sm comment">
+<b>${name}</b>
+<p class="opacity-70">${msg}</p>
+</div>
+`
+
+comments.insertAdjacentHTML("afterbegin",html)
+
+document.getElementById("msg").value=""
+
+}
+
+const names=["محمد","أحمد","محمود","سارة","نور","مريم"]
+
+const msgs=[
+"الخدمة اشتغلت بسرعة",
+"تم التفعيل شكرا",
+"السعر ممتاز",
+"وفرت فلوس",
+"الدعم سريع"
+]
+
+function autoComment(){
+
+let n=names[Math.floor(Math.random()*names.length)]
+let m=msgs[Math.floor(Math.random()*msgs.length)]
+
+let html=`
+<div class="card p-3 rounded text-sm comment">
+<b>${n}</b>
+<p class="opacity-70">${m}</p>
+</div>
+`
+
+comments.insertAdjacentHTML("afterbegin",html)
+
+}
+
+setInterval(autoComment,7000)
+
+setInterval(()=>{
+online.innerText=120+Math.floor(Math.random()*50)
+},4000)
+
+render()
+
+</script></body>
+</html>
